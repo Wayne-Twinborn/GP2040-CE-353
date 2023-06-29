@@ -190,7 +190,7 @@ export default function PinMappingPage() {
 						})}
 					</tbody>
 				</table>
-				<Button type="submit">{t('Common:button-save-label')}</Button>
+				<Button type="submit">{t('Common:button-save-label')}</Button> <Button type="button">Advanced</Button>
 				{saveMessage ? <span className="alert">{saveMessage}</span> : null}
 			</Form>
 		</Section>
