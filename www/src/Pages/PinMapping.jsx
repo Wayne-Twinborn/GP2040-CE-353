@@ -82,18 +82,23 @@ export default function PinMappingPage() {
 	const validateMappings = (mappings) => {
 		console.log('mappings');
 		console.log(mappings)
+		//is this always the same order? Need to verify and make it a const instead if so.
 		const buttons = Object.keys(mappings);
+		//const buttons = ["Up", "Down", "Left", "Right", "B0", "B2",  "B3", "B4", "L1", "R1", "L2", "R2", ]
 
 		// Create some mapped pin groups for easier error checking
+		////// Creating an array of pins in the order of buttons.
 		const mappedPins = buttons
 			.filter(p => mappings[p].pin > -1)
 			.reduce((a, p) => {
 				a.push(mappings[p].pin);
 				return a;
 			}, []);
+
+		////// Creates list of arrays to check against. If a pin is in one of these lists, it'll be flagged with an error.
 		const mappedPinCounts = mappedPins.reduce((a, p) => ({ ...a, [p]: (a[p] || 0) + 1 }), {});
 		const uniquePins = mappedPins.filter((p, i, a) => a.indexOf(p) === i);
-		const conflictedPins = Object.keys(mappedPinCounts).filter(p => mappedPinCounts[p] > 1).map(parseInt);
+		//////const conflictedPins = Object.keys(mappedPinCounts).filter(p => mappedPinCounts[p] > 1).map(parseInt);
 		const invalidPins = uniquePins.filter(p => boards[selectedBoard].invalidPins.indexOf(p) > -1);
 		const otherPins = usedPins.filter(p => uniquePins.indexOf(p) === -1);
 
@@ -106,8 +111,9 @@ export default function PinMappingPage() {
 
 
 			// Identify conflicted pins
-			else if (conflictedPins.indexOf(mappings[button].pin) > -1)
-				mappings[button].error = translatedErrorType.conflict;
+			////// We don't care  about this now.
+			//else if (conflictedPins.indexOf(mappings[button].pin) > -1)
+			//	mappings[button].error = translatedErrorType.conflict;
 
 			// Identify invalid pin assignments
 			else if (invalidPins.indexOf(mappings[button].pin) > -1)
