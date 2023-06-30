@@ -6,6 +6,7 @@ configs/MyBoard
 .DS_Store
 build/
 notes
+changelog.md
 
 .*.sw*
 compile_commands.json

@@ -41,10 +41,12 @@ export default function PinMappingPage() {
 	}, [setButtonMappings, selectedController]);
 
 	//////This is where I probably need to start. trim whitespace, split on commas, then pass the results.
+	//Alright so prop  is just the button value as a string. Just up, down, left, right, etc.
+	//e is the entire object. For efficiency, refactoring this to just take the only value we use from e.
 	const handlePinChange = (e, prop) => {
 		const newMappings = { ...buttonMappings };
-		if (e.target.value)
-			newMappings[prop].pin = parseInt(e.target.value);
+		if (e)
+			newMappings[prop].pin = e;
 		else
 			newMappings[prop].pin = '';
 
@@ -70,7 +72,15 @@ export default function PinMappingPage() {
 	};
 
 	//////This seems to be where the pin changes go before hitting submit.
+	//Alright so this is where the pin mappings go to check for red marks
+	//Okay so mappings is an array of objects
+	//The obhjects are just the  buttons like up down left right
+	//Each object has pin, key, and error.
+	//Pin and key are the pin and keyboard mappings respectively.
+	//I don't know where or how error is populated yet. but I need to find and addresss that section first.
 	const validateMappings = (mappings) => {
+		console.log('mappings');
+		console.log(mappings)
 		const buttons = Object.keys(mappings);
 
 		// Create some mapped pin groups for easier error checking
@@ -93,7 +103,7 @@ export default function PinMappingPage() {
 			if ((mappings[button].pin < boards[selectedBoard].minPin || mappings[button].pin > boards[selectedBoard].maxPin) && requiredButtons.filter(b => b === button).length)
 				mappings[button].error = translatedErrorType.required;
 
-			//////This whole section needs changed. Multiple pins need set, so there's not going to be conflicts.
+
 			// Identify conflicted pins
 			else if (conflictedPins.indexOf(mappings[button].pin) > -1)
 				mappings[button].error = translatedErrorType.conflict;
@@ -183,7 +193,7 @@ export default function PinMappingPage() {
 										min={-1}
 										max={boards[selectedBoard].maxPin}
 										isInvalid={buttonMappings[button].error}
-										onChange={(e) => handlePinChange(e, button)}
+										onChange={(e) => handlePinChange(e.target.value, button)}
 									></Form.Control>
 									<Form.Control.Feedback type="invalid">
 										{renderError(button)}
