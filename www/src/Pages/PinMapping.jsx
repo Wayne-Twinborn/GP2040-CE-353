@@ -40,6 +40,7 @@ export default function PinMappingPage() {
 		fetchData();
 	}, [setButtonMappings, selectedController]);
 
+	//////This is where I probably need to start. trim whitespace, split on commas, then pass the results.
 	const handlePinChange = (e, prop) => {
 		const newMappings = { ...buttonMappings };
 		if (e.target.value)
@@ -68,6 +69,7 @@ export default function PinMappingPage() {
 		setSaveMessage(success ? t('Common:saved-success-message') : t('Common:saved-error-message'));
 	};
 
+	//////This seems to be where the pin changes go before hitting submit.
 	const validateMappings = (mappings) => {
 		const buttons = Object.keys(mappings);
 
@@ -91,6 +93,7 @@ export default function PinMappingPage() {
 			if ((mappings[button].pin < boards[selectedBoard].minPin || mappings[button].pin > boards[selectedBoard].maxPin) && requiredButtons.filter(b => b === button).length)
 				mappings[button].error = translatedErrorType.required;
 
+			//////This whole section needs changed. Multiple pins need set, so there's not going to be conflicts.
 			// Identify conflicted pins
 			else if (conflictedPins.indexOf(mappings[button].pin) > -1)
 				mappings[button].error = translatedErrorType.conflict;
@@ -190,7 +193,7 @@ export default function PinMappingPage() {
 						})}
 					</tbody>
 				</table>
-				<Button type="submit">{t('Common:button-save-label')}</Button> <Button type="button">Advanced</Button>
+				<Button type="submit">{t('Common:button-save-label')}</Button>
 				{saveMessage ? <span className="alert">{saveMessage}</span> : null}
 			</Form>
 		</Section>
