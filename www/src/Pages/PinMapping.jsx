@@ -47,15 +47,20 @@ export default function PinMappingPage() {
 	const handlePinChange = (e, prop) => {
 		const newMappings = { ...buttonMappings };
 		if (e){
-			if(e=='number'){
+			if(!isNaN(+e)){
 				newMappings[prop].pin = e;
 			}
 			else {
 				e = e.replace(" ", '');
 				e = e.split(',');
-				newMappings[prop].pin = parseInt(e[0]);
-		}
-		//	newMappings[prop].pin = e;
+				newMappings[prop].pin = e;
+				/*if(!isNaN(+e[0])){
+					newMappings[prop].pin = parseInt(e[0]);
+				}
+				else {
+					newMappings[prop].pin = e;
+				}*/
+			}
 		}
 		else {
 			newMappings[prop].pin = '';
@@ -91,9 +96,9 @@ export default function PinMappingPage() {
 	const validateMappings = (mappings) => {
 		console.log('mappings');
 		console.log(mappings)
-		//is this always the same order? Need to verify and make it a const instead if so.
+		//////is this always the same order? Need to verify and make it a const instead if so.
 		const buttons = Object.keys(mappings);
-		//const buttons = ["Up", "Down", "Left", "Right", "B0", "B2",  "B3", "B4", "L1", "R1", "L2", "R2", ]
+		//////const buttons = ["Up", "Down", "Left", "Right", "B0", "B2",  "B3", "B4", "L1", "R1", "L2", "R2", ]
 
 		// Create some mapped pin groups for easier error checking
 		////// Creating an array of pins in the order of buttons.
@@ -105,9 +110,7 @@ export default function PinMappingPage() {
 			}, []);
 
 		////// Creates list of arrays to check against. If a pin is in one of these lists, it'll be flagged with an error.
-		//const mappedPinCounts = mappedPins.reduce((a, p) => ({ ...a, [p]: (a[p] || 0) + 1 }), {});
 		const uniquePins = mappedPins.filter((p, i, a) => a.indexOf(p) === i);
-		//////const conflictedPins = Object.keys(mappedPinCounts).filter(p => mappedPinCounts[p] > 1).map(parseInt);
 		const invalidPins = uniquePins.filter(p => boards[selectedBoard].invalidPins.indexOf(p) > -1);
 		const otherPins = usedPins.filter(p => uniquePins.indexOf(p) === -1);
 
@@ -119,17 +122,11 @@ export default function PinMappingPage() {
 				mappings[button].error = translatedErrorType.required;
 
 			//////Check for out of range pin as we've changed the form and the min/max is no longer pre-filtered.
-			if(mappings[button].pin < boards[selectedBoard].minPin || mappings[button].pin > boards[selectedBoard].maxPin){
+			if(mappings[button].pin < boards[selectedBoard].minPin && mappings[button].pin != -1 || mappings[button].pin > boards[selectedBoard].maxPin){
 				mappings[button].error = translatedErrorType.invalid;
 			}
 
-
-			// Identify conflicted pins
-			////// We don't care  about this now.
-			//else if (conflictedPins.indexOf(mappings[button].pin) > -1)
-			//	mappings[button].error = translatedErrorType.conflict;
-
-			// Identify invalid pin assignments
+			//////Check for pins that are invalid or not part of the board.
 			else if (invalidPins.indexOf(mappings[button].pin) > -1)
 				mappings[button].error = translatedErrorType.invalid;
 
