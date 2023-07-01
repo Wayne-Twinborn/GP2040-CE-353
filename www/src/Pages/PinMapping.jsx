@@ -46,11 +46,20 @@ export default function PinMappingPage() {
 	//e is the entire object. For efficiency, refactoring this to just take the only value we use from e.
 	const handlePinChange = (e, prop) => {
 		const newMappings = { ...buttonMappings };
-		if (e)
-			newMappings[prop].pin = e;
-		else
+		if (e){
+			if(e=='number'){
+				newMappings[prop].pin = e;
+			}
+			else {
+				e = e.replace(" ", '');
+				e = e.split(',');
+				newMappings[prop].pin = parseInt(e[0]);
+		}
+		//	newMappings[prop].pin = e;
+		}
+		else {
 			newMappings[prop].pin = '';
-
+		}
 		validateMappings(newMappings);
 	};
 
@@ -96,7 +105,7 @@ export default function PinMappingPage() {
 			}, []);
 
 		////// Creates list of arrays to check against. If a pin is in one of these lists, it'll be flagged with an error.
-		const mappedPinCounts = mappedPins.reduce((a, p) => ({ ...a, [p]: (a[p] || 0) + 1 }), {});
+		//const mappedPinCounts = mappedPins.reduce((a, p) => ({ ...a, [p]: (a[p] || 0) + 1 }), {});
 		const uniquePins = mappedPins.filter((p, i, a) => a.indexOf(p) === i);
 		//////const conflictedPins = Object.keys(mappedPinCounts).filter(p => mappedPinCounts[p] > 1).map(parseInt);
 		const invalidPins = uniquePins.filter(p => boards[selectedBoard].invalidPins.indexOf(p) > -1);
@@ -108,6 +117,11 @@ export default function PinMappingPage() {
 			// Validate required button
 			if ((mappings[button].pin < boards[selectedBoard].minPin || mappings[button].pin > boards[selectedBoard].maxPin) && requiredButtons.filter(b => b === button).length)
 				mappings[button].error = translatedErrorType.required;
+
+			//////Check for out of range pin as we've changed the form and the min/max is no longer pre-filtered.
+			if(mappings[button].pin < boards[selectedBoard].minPin || mappings[button].pin > boards[selectedBoard].maxPin){
+				mappings[button].error = translatedErrorType.invalid;
+			}
 
 
 			// Identify conflicted pins
@@ -194,7 +208,7 @@ export default function PinMappingPage() {
 								<td>{label}</td>
 								<td>
 									<Form.Control
-										type="number"
+										type="text"
 										className="pin-input form-control-sm"
 										value={buttonMappings[button].pin}
 										min={-1}
